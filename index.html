@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ภารกิจฮีโร่นักออกกำลังกาย</title>
+    <style>
+        /* --- Import Font --- */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+        /* --- Global Styles & Variables --- */
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --light-blue: #a2d2ff;
+            --white-color: #ffffff;
+            --text-color: #333;
+            --success-color: #4caf50;
+            --font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, var(--light-blue), var(--primary-color));
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        /* --- Floating Icons --- */
+        .floating-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-icons span {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 10s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        /* --- Main Container --- */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header h1 {
+            color: var(--primary-color);
+            font-weight: 900;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* --- Connect Button --- */
+        #connectButton {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background-color: var(--secondary-color);
+            color: var(--white-color);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #connectButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- Main App (hidden by default) --- */
+        #mainApp {
+            display: none;
+        }
+
+        /* --- Goal Setting --- */
+        .goal-setter {
+            margin: 20px 0;
+        }
+        
+        .goal-setter label {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .goal-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .goal-controls button {
+            width: 50px;
+            height: 50px;
+            font-size: 2rem;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .goal-controls button:active {
+            transform: scale(0.9);
+        }
+
+        #goalValue {
+            font-size: 2.5rem;
+            font-weight: 900;
+            min-width: 80px;
+        }
+
+        /* --- Exercise Selection --- */
+        .exercise-selector, .sensitivity-selector {
+            margin: 20px 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 15px;
+            border: 2px solid var(--light-blue);
+            background-color: var(--white-color);
+            font-family: var(--font-family);
+        }
+
+        /* --- Counter Display --- */
+        .counter-display {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+        }
+        
+        #count {
+            font-size: 6rem;
+            font-weight: 900;
+            color: var(--secondary-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        #encouragement {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            height: 30px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        
+        /* --- Progress Bar --- */
+        .progress-container {
+            width: 100%;
+            height: 25px;
+            background-color: #e0e0e0;
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--light-blue), var(--success-color));
+            border-radius: 25px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        /* --- Control Buttons --- */
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        #resetButton, #saveButton {
+            flex: 1;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            font-weight: 700;
+        }
+
+        #resetButton {
+            background-color: #ff4d4d;
+        }
+
+        #saveButton {
+            background-color: var(--success-color);
+        }
+        
+        /* --- Stats Display --- */
+        .stats {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .stat-card h3 {
+            margin: 0 0 5px 0;
+            color: var(--secondary-color);
+        }
+
+        .stat-card p {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        /* --- Celebration Overlay --- */
+        #celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            color: white;
+            font-size: 3rem;
+            text-shadow: 0 0 15px black;
+        }
+        
+        #celebration.show {
+            display: flex;
+        }
+
+        .bouncing-text {
+            animation: bounce 0.8s infinite;
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+          40% {transform: translateY(-30px);}
+          60% {transform: translateY(-15px);}
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-icons">
+        <span>🎈</span><span>⭐</span><span>🌈</span><span>✨</span><span>🎉</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>ภารกิจฮีโร่นักออกกำลังกาย</h1>
+        </header>
+
+        <button id="connectButton">🚀 เชื่อมต่อกับ micro:bit</button>
+
+        <div id="mainApp">
+            <div class="goal-setter">
+                <label for="goalValue">🎯 ตั้งเป้าหมายภารกิจ!</label>
+                <div class="goal-controls">
+                    <button id="decreaseGoal">-</button>
+                    <span id="goalValue">20</span>
+                    <button id="increaseGoal">+</button>
+                </div>
+            </div>
+
+            <div class="exercise-selector">
+                <select id="exerciseType">
+                    <option value="ทั่วไป">🤸 ทั่วไป</option>
+                    <option value="เชือกกายภาพบำบัด">💪 เชือกกายภาพบำบัด</option>
+                    <option value="วิดพื้น">🏋️ วิดพื้น</option>
+                    <option value="ซิทอัพ">🏃 ซิทอัพ</option>
+                    <option value="สควอท">🦵 สควอท</option>
+                    <option value="กระโดด">🤸‍♂️ กระโดด</option>
+                </select>
+            </div>
+            
+            <div class="sensitivity-selector">
+                <label for="sensitivity">ความไวในการนับ:</label>
+                <select id="sensitivity">
+                    <option value="1500">ไวมาก</option>
+                    <option value="2000" selected>ปานกลาง</option>
+                    <option value="2500">น้อย</option>
+                </select>
+            </div>
+
+            <div class="counter-display">
+                <p id="count">0</p>
+                <p id="encouragement">เริ่มเลย!</p>
+            </div>
+
+            <div class="progress-container">
+                <div id="progressBar"></div>
+            </div>
+
+            <div class="control-buttons">
+                <button id="resetButton">🔄 รีเซ็ต</button>
+                <button id="saveButton" disabled>💾 บันทึกภารกิจ</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>วันนี้</h3>
+                    <p id="todayStat">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>รวมทั้งหมด</h3>
+                    <p id="totalStat">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>เฉลี่ย/วัน</h3>
+                    <p id="avgStat">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>ต่อเนื่อง</h3>
+                    <p id="streakStat">0 วัน</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="celebration">
+        <div class="bouncing-text">🎉 ภารกิจสำเร็จ! 🎉</div>
+        <p>สุดยอดไปเลยฮีโร่!</p>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const connectButton = document.getElementById('connectButton');
+        const mainApp = document.getElementById('mainApp');
+        const countDisplay = document.getElementById('count');
+        const goalValueDisplay = document.getElementById('goalValue');
+        const increaseGoalButton = document.getElementById('increaseGoal');
+        const decreaseGoalButton = document.getElementById('decreaseGoal');
+        const progressBar = document.getElementById('progressBar');
+        const encouragementText = document.getElementById('encouragement');
+        const resetButton = document.getElementById('resetButton');
+        const saveButton = document.getElementById('saveButton');
+        const exerciseTypeSelect = document.getElementById('exerciseType');
+        const sensitivitySelect = document.getElementById('sensitivity');
+        const celebrationOverlay = document.getElementById('celebration');
+
+        // --- Stats Elements ---
+        const todayStatDisplay = document.getElementById('todayStat');
+        const totalStatDisplay = document.getElementById('totalStat');
+        const avgStatDisplay = document.getElementById('avgStat');
+        const streakStatDisplay = document.getElementById('streakStat');
+        
+        // --- App State ---
+        let microbitDevice;
+        let accelerometerCharacteristic;
+        let count = 0;
+        let goal = 20;
+        let lastAcceleration = 0;
+        let isCounting = false;
+        
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzpyV0bNgUOfhCEhv-8T-BfzoYaK-0vBndi0JwSiW7aqMPf9ZRhsz958IUTwDBp-TvCTg/exec'; // ⚠️ <--- ใส่ URL ของคุณที่นี่
+
+        const encouragementMessages = [
+            "เริ่มต้นได้สวย!", "ไปต่อเลย!", "เยี่ยมมาก!", "สุดยอด!", "แข็งแกร่งมาก!", "ว้าว!", "เก่งมากเลย!"
+        ];
+
+        // --- Event Listeners ---
+        connectButton.addEventListener('click', connectToMicrobit);
+        increaseGoalButton.addEventListener('click', () => updateGoal(1));
+        decreaseGoalButton.addEventListener('click', () => updateGoal(-1));
+        resetButton.addEventListener('click', resetCounter);
+        saveButton.addEventListener('click', saveDataToGoogleSheet);
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            updateGoal(0);
+            animateFloatingIcons();
+        });
+        
+        // --- Bluetooth Connection ---
+        async function connectToMicrobit() {
+            try {
+                connectButton.textContent = "กำลังค้นหา...";
+                microbitDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: "BBC micro:bit" }],
+                    optionalServices: ['e95d0753-251d-470a-a062-fa1922dfa9a8'] // Accelerometer Service
+                });
+
+                connectButton.textContent = "กำลังเชื่อมต่อ...";
+                const server = await microbitDevice.gatt.connect();
+                const service = await server.getPrimaryService('e95d0753-251d-470a-a062-fa1922dfa9a8');
+                accelerometerCharacteristic = await service.getCharacteristic('e95dca4b-251d-470a-a062-fa1922dfa9a8');
+                
+                accelerometerCharacteristic.startNotifications();
+                accelerometerCharacteristic.addEventListener('characteristicvaluechanged', handleAcceleration);
+
+                connectButton.style.display = 'none';
+                mainApp.style.display = 'block';
+                encouragementText.textContent = "เชื่อมต่อสำเร็จ! เริ่มขยับได้เลย!";
+            } catch (error) {
+                console.error("เกิดข้อผิดพลาด:", error);
+                connectButton.textContent = "🚀 เชื่อมต่อกับ micro:bit";
+                alert("ไม่สามารถเชื่อมต่อได้ โปรดลองอีกครั้ง");
+            }
+        }
+        
+        // --- Real-time Counting ---
+        function handleAcceleration(event) {
+            const value = event.target.value;
+            const x = value.getInt16(0, true);
+            const y = value.getInt16(2, true);
+            const z = value.getInt16(4, true);
+
+            const totalAcceleration = Math.sqrt(x*x + y*y + z*z);
+            const delta = Math.abs(totalAcceleration - lastAcceleration);
+            
+            const SENSITIVITY = parseInt(sensitivitySelect.value, 10);
+
+            if (delta > SENSITIVITY && !isCounting) {
+                isCounting = true;
+                count++;
+                updateUI();
+                setTimeout(() => { isCounting = false; }, 500); // Cooldown to prevent double counting
+            }
+            lastAcceleration = totalAcceleration;
+        }
+        
+        // --- UI Updates ---
+        function updateUI() {
+            countDisplay.textContent = count;
+            countDisplay.style.animation = 'none';
+            void countDisplay.offsetWidth; // Trigger reflow
+            countDisplay.style.animation = 'pulse 1.5s infinite';
+
+            const progress = (count / goal) * 100;
+            progressBar.style.width = `${Math.min(progress, 100)}%`;
+
+            if (count > 0 && count < goal) {
+                if (count % 5 === 0) { // Show encouragement every 5 counts
+                    const randomIndex = Math.floor(Math.random() * encouragementMessages.length);
+                    encouragementText.textContent = encouragementMessages[randomIndex];
+                }
+            } else if (count >= goal) {
+                encouragementText.textContent = "ภารกิจสำเร็จ! 🎉";
+                saveButton.disabled = false;
+                showCelebration();
+            }
+        }
+
+        function updateGoal(change) {
+            goal += change;
+            if (goal < 1) goal = 1;
+            goalValueDisplay.textContent = goal;
+            updateUI();
+        }
+
+        function showCelebration() {
+            celebrationOverlay.classList.add('show');
+            setTimeout(() => {
+                celebrationOverlay.classList.remove('show');
+            }, 4000); // Hide after 4 seconds
+        }
+        
+        // --- Controls ---
+        function resetCounter() {
+            count = 0;
+            saveButton.disabled = true;
+            encouragementText.textContent = "เริ่มใหม่ได้เลย!";
+            updateUI();
+        }
+        
+        // --- Data Storage & Stats ---
+        function loadStats() {
+            const stats = JSON.parse(localStorage.getItem('exerciseStats')) || {
+                today: { date: '', count: 0 },
+                total: 0,
+                history: {},
+                streak: 0,
+                lastDate: null
+            };
+            
+            const todayStr = new Date().toLocaleDateString('th-TH');
+
+            if (stats.today.date !== todayStr) {
+                // Check for streak
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toLocaleDateString('th-TH');
+
+                if (stats.lastDate === yesterdayStr) {
+                    stats.streak++;
+                } else if(stats.lastDate !== todayStr) {
+                    stats.streak = 0; // Reset if they missed a day
+                }
+                
+                stats.today = { date: todayStr, count: 0 };
+            }
+            
+            updateStatsDisplay(stats);
+        }
+
+        function updateStats(newCount) {
+            let stats = JSON.parse(localStorage.getItem('exerciseStats')) || {
+                today: { date: new Date().toLocaleDateString('th-TH'), count: 0 },
+                total: 0,
+                history: {},
+                streak: 0,
+                lastDate: null
+            };
+
+            const todayStr = new Date().toLocaleDateString('th-TH');
+
+            stats.today.count += newCount;
+            stats.total += newCount;
+            stats.history[todayStr] = (stats.history[todayStr] || 0) + newCount;
+            
+            // Update streak if it's the first exercise of the day
+            if (stats.streak === 0) {
+                 stats.streak = 1;
+            }
+            stats.lastDate = todayStr;
+
+            localStorage.setItem('exerciseStats', JSON.stringify(stats));
+            updateStatsDisplay(stats);
+        }
+
+        function updateStatsDisplay(stats) {
+            const todayStr = new Date().toLocaleDateString('th-TH');
+            todayStatDisplay.textContent = stats.today.date === todayStr ? stats.today.count : 0;
+            totalStatDisplay.textContent = stats.total;
+            streakStatDisplay.textContent = `${stats.streak} วัน`;
+            
+            const daysTracked = Object.keys(stats.history).length;
+            const avg = daysTracked > 0 ? (stats.total / daysTracked).toFixed(1) : 0;
+            avgStatDisplay.textContent = avg;
+        }
+
+        async function saveDataToGoogleSheet() {
+            saveButton.textContent = "กำลังบันทึก...";
+            saveButton.disabled = true;
+
+            const data = {
+                exercise: exerciseTypeSelect.value,
+                count: count,
+                goal: goal
+            };
+
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Important for simple POST requests to GAS
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                alert("บันทึกภารกิจสำเร็จแล้ว!");
+                updateStats(count); // Update local stats after successful save
+                resetCounter();
+
+            } catch (error) {
+                console.error('Error saving data:', error);
+                alert("เกิดข้อผิดพลาดในการบันทึก! แต่ข้อมูลถูกเก็บในเครื่องแล้ว");
+                updateStats(count); // Still save locally if API fails
+            } finally {
+                saveButton.textContent = "💾 บันทึกภารกิจ";
+            }
+        }
+        
+        // --- Fun Animations ---
+        function animateFloatingIcons() {
+            const icons = document.querySelectorAll('.floating-icons span');
+            icons.forEach(icon => {
+                icon.style.top = `${Math.random() * 90}%`;
+                icon.style.left = `${Math.random() * 90}%`;
+                icon.style.animationDelay = `${Math.random() * 10}s`;
+            });
+        }
+    </script>
+</body>
+</html>
